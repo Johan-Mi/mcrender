@@ -60,7 +60,7 @@ impl Renderer {
     }
 
     fn block_at(&self, pos: IVec3) -> Intern<Block> {
-        let region = &self.regions[&(pos.xz() >> 5)];
+        let region = &self.regions[&(pos.xz() >> 9)];
         let chunk = region.chunks[(pos.z >> 4).rem_euclid(32) as usize]
             [(pos.x >> 4).rem_euclid(32) as usize]
             .as_ref()
