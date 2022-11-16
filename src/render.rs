@@ -1,24 +1,26 @@
 use crate::{chunk::Block, region::Region};
 use glam::{IVec2, IVec3, Vec3, Vec3Swizzles};
 use internment::Intern;
-use std::{collections::HashMap, path::Path, time::Duration};
+use std::{collections::HashMap, ops::Range, path::Path, time::Duration};
 
 pub struct Renderer {
     regions: HashMap<IVec2, Region>,
+    options: RenderOptions,
 }
 
 impl Renderer {
-    pub fn new(world_path: &Path) -> Self {
+    pub fn new(world_path: &Path, options: RenderOptions) -> Self {
         Self {
-            regions: Region::load_all(world_path),
+            regions: Region::load_all(world_path, &options),
+            options,
         }
     }
 
-    pub fn render(&self, options: &RenderOptions) {
-        for z in 0..16 {
+    pub fn render(&self) {
+        for z in self.options.area.start.y..self.options.area.end.y {
             print!("\x1b[2J\x1b[H");
             for y in (65..100).rev() {
-                for x in 0..32 {
+                for x in self.options.area.start.x..self.options.area.end.x {
                     let block = self.block_at(IVec3 { x, y, z });
                     print!(
                         "{}\x1b[0m",
@@ -76,4 +78,5 @@ impl Renderer {
 pub struct RenderOptions {
     pub camera_position: Vec3,
     pub camera_target: Vec3,
+    pub area: Range<IVec2>,
 }

@@ -1,7 +1,8 @@
-use crate::chunk::Chunk;
+use crate::{chunk::Chunk, render::RenderOptions};
 use glam::IVec2;
 use std::{
     collections::HashMap,
+    ffi::OsStr,
     fs::{self, DirEntry},
     path::Path,
 };
@@ -11,31 +12,39 @@ pub struct Region {
 }
 
 impl Region {
-    pub fn load_all(world_path: &Path) -> HashMap<IVec2, Self> {
+    pub fn load_all(world_path: &Path, options: &RenderOptions) -> HashMap<IVec2, Self> {
         fs::read_dir(world_path.join("region"))
             .unwrap()
             .map(Result::unwrap)
-            // Only load one region to keep things fast
-            // TODO: let the user specify a specific part of the world to render
-            .filter(|entry| entry.file_name() == "r.0.0.mca")
-            .map(Self::load)
+            .map(|entry| {
+                let location = Self::parse_file_name(&entry.file_name());
+                (entry, location)
+            })
+            .filter(|(_entry, location)| {
+                (options.area.start.x.rem_euclid(512)..options.area.end.x.rem_euclid(512))
+                    .contains(&location.x)
+                    && (options.area.start.y.rem_euclid(512)..options.area.end.y.rem_euclid(512))
+                        .contains(&location.y)
+            })
+            .map(|(entry, location)| Self::load(entry, location))
             .collect()
     }
 
-    fn load(entry: DirEntry) -> (IVec2, Self) {
-        let file_name = entry.file_name();
+    fn parse_file_name(file_name: &OsStr) -> IVec2 {
         let mut coordinates = file_name
-            .as_os_str()
             .to_str()
             .unwrap()
             .split('.')
             .skip(1)
             .map(str::parse)
             .map(Result::unwrap);
-        let coordinates = IVec2 {
+        IVec2 {
             x: coordinates.next().unwrap(),
             y: coordinates.next().unwrap(),
-        };
+        }
+    }
+
+    fn load(entry: DirEntry, location: IVec2) -> (IVec2, Self) {
         let file = fs::read(entry.path()).unwrap();
 
         // This should really use `array::from_fn`, but that would overflow
@@ -47,6 +56,6 @@ impl Region {
             }
         }
 
-        (coordinates, Self { chunks })
+        (location, Self { chunks })
     }
 }
