@@ -12,7 +12,10 @@ pub struct Region {
 }
 
 impl Region {
-    pub fn load_all(world_path: &Path, options: &RenderOptions) -> HashMap<IVec2, Self> {
+    pub fn load_all(
+        world_path: &Path,
+        options: &RenderOptions,
+    ) -> HashMap<IVec2, Self> {
         fs::read_dir(world_path.join("region"))
             .unwrap()
             .map(Result::unwrap)
@@ -21,9 +24,11 @@ impl Region {
                 (entry, location)
             })
             .filter(|(_entry, location)| {
-                (options.area.start.x.rem_euclid(512)..options.area.end.x.rem_euclid(512))
+                (options.area.start.x.rem_euclid(512)
+                    ..options.area.end.x.rem_euclid(512))
                     .contains(&location.x)
-                    && (options.area.start.y.rem_euclid(512)..options.area.end.y.rem_euclid(512))
+                    && (options.area.start.y.rem_euclid(512)
+                        ..options.area.end.y.rem_euclid(512))
                         .contains(&location.y)
             })
             .map(|(entry, location)| Self::load(entry, location))

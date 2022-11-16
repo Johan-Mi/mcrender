@@ -24,7 +24,8 @@ impl Renderer {
                     let block = self.block_at(IVec3 { x, y, z });
                     print!(
                         "{}\x1b[0m",
-                        Self::block_appearance(&block).unwrap_or_else(|| &block.name[10..])
+                        Self::block_appearance(&block)
+                            .unwrap_or_else(|| &block.name[10..])
                     );
                 }
                 println!();
@@ -68,8 +69,9 @@ impl Renderer {
             .as_ref()
             .unwrap();
         let section = &chunk.sections[(pos.y + 64) as usize / 16];
-        let offset_within_section =
-            pos.y.rem_euclid(16) * 256 + pos.z.rem_euclid(16) * 16 + pos.x.rem_euclid(16);
+        let offset_within_section = pos.y.rem_euclid(16) * 256
+            + pos.z.rem_euclid(16) * 16
+            + pos.x.rem_euclid(16);
         section.block_states.palette
             [section.block_states.data[offset_within_section as usize] as usize]
     }

@@ -16,14 +16,19 @@ impl Chunk {
         }
         let locations: &[[u8; 4]] = bytemuck::cast_slice(&file[..4096]);
         let raw_location = locations[z * 32 + x];
-        let data_offset = u32::from_be_bytes([0, raw_location[0], raw_location[1], raw_location[2]])
-            as usize
+        let data_offset = u32::from_be_bytes([
+            0,
+            raw_location[0],
+            raw_location[1],
+            raw_location[2],
+        ]) as usize
             * 4096;
         if data_offset == 0 {
             return None;
         }
         let payload = &file[data_offset..];
-        let length = u32::from_be_bytes(bytemuck::cast_slice(payload)[0]) as usize - 1;
+        let length =
+            u32::from_be_bytes(bytemuck::cast_slice(payload)[0]) as usize - 1;
         let data = &payload[5..][..length];
         let compression_scheme = payload[4];
         assert_eq!(
@@ -67,7 +72,8 @@ impl<'de> Deserialize<'de> for BlockStates {
             data: Option<Vec<i64>>,
         }
 
-        let DeBlockStates { palette, data } = DeBlockStates::deserialize(deserializer)?;
+        let DeBlockStates { palette, data } =
+            DeBlockStates::deserialize(deserializer)?;
         if palette.len() == 1 {
             Ok(Self {
                 palette,
@@ -75,15 +81,17 @@ impl<'de> Deserialize<'de> for BlockStates {
             })
         } else {
             let data = data.unwrap();
-            let index_bit_length = (usize::BITS - (palette.len() - 1).leading_zeros()).max(4);
+            let index_bit_length =
+                (usize::BITS - (palette.len() - 1).leading_zeros()).max(4);
             let indices_per_long = 64 / index_bit_length;
             let mask = (1u64 << index_bit_length) - 1;
             assert!(indices_per_long as usize * data.len() >= 4096,);
             let data = data
                 .into_iter()
                 .flat_map(|long| {
-                    (0..indices_per_long)
-                        .map(move |i| ((long as u64 >> (i * index_bit_length)) & mask) as u16)
+                    (0..indices_per_long).map(move |i| {
+                        ((long as u64 >> (i * index_bit_length)) & mask) as u16
+                    })
                 })
                 .take(4096)
                 .collect::<Box<_>>()
