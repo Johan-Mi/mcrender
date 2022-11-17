@@ -157,9 +157,10 @@ impl EventHandler for Renderer {
         if self.key_k {
             self.camera_pitch -= TURN_SPEED;
         }
-        self.camera_pitch = self
-            .camera_pitch
-            .clamp(-std::f32::consts::FRAC_PI_2, std::f32::consts::FRAC_PI_2);
+        self.camera_pitch = self.camera_pitch.clamp(
+            -std::f32::consts::FRAC_PI_2 + 1e-5,
+            std::f32::consts::FRAC_PI_2 - 1e-5,
+        );
 
         if self.key_space {
             self.camera_position.y += FLY_SPEED;
