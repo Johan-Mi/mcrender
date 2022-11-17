@@ -14,4 +14,5 @@ glam = "0.22.0"
 hematite-nbt = "0.5.2"
 internment = { version = "0.7.0", features = ["serde"] }
 miniquad = "0.3.14"
+png_pong = "0.8.2"
 serde = { version = "1.0.147", features = ["derive"] }

@@ -1,14 +1,19 @@
 mod chunk;
+mod mesh;
 mod region;
 mod render;
 mod shader;
 mod world;
 
 use glam::{IVec2, Vec3};
-use std::{ops::Range, path::Path};
+use std::{
+    ops::Range,
+    path::{Path, PathBuf},
+};
 use world::World;
 
 pub struct Options {
+    pub resource_pack_path: PathBuf,
     pub camera_position: Vec3,
     pub camera_pitch: f32,
     pub camera_yaw: f32,
@@ -17,12 +22,17 @@ pub struct Options {
 }
 
 fn main() {
-    let Some(world_path) = std::env::args().nth(1) else {
-        eprintln!("Error: no world path provided");
-        return;
-    };
+    let world_path = std::env::args()
+        .nth(1)
+        .unwrap_or_else(|| "world".to_owned());
+    let resource_pack_path = PathBuf::from(
+        std::env::args()
+            .nth(2)
+            .unwrap_or_else(|| "resource-pack".to_owned()),
+    );
 
     let options = Options {
+        resource_pack_path,
         camera_position: Vec3 {
             x: 0.0,
             y: 0.0,

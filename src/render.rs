@@ -7,8 +7,9 @@ use glam::{Mat3, Mat4, Vec2, Vec3};
 use miniquad::{
     conf::Conf, Bindings, Buffer, BufferLayout, BufferType, Context,
     EventHandler, FilterMode, KeyCode, PassAction, Pipeline, Shader, Texture,
-    VertexAttribute, VertexFormat,
+    TextureFormat, TextureParams, VertexAttribute, VertexFormat,
 };
+use std::{fs::File, path::Path};
 
 const MOVE_SPEED: f32 = 0.2;
 const FLY_SPEED: f32 = 0.2;
@@ -54,10 +55,10 @@ impl Renderer {
                 uv: Vec2 { x: u, y: v },
             };
             [
-                v(-1.0, -1.0, 1.0, 0.0, 0.0),
-                v(1.0, -1.0, 1.0, 1.0, 0.0),
-                v(1.0, 1.0, 1.0, 1.0, 1.0),
-                v(-1.0, 1.0, 1.0, 0.0, 1.0),
+                v(-1.0, -1.0, 1.0, 0.0, 1.0),
+                v(1.0, -1.0, 1.0, 1.0, 1.0),
+                v(1.0, 1.0, 1.0, 1.0, 0.0),
+                v(-1.0, 1.0, 1.0, 0.0, 0.0),
             ]
         };
         let vertex_buffer =
@@ -67,14 +68,22 @@ impl Renderer {
         let index_buffer =
             Buffer::immutable(ctx, BufferType::IndexBuffer, &indices);
 
-        let pixels: &[u32] = &[
-            0xffffffff, 0xff0000ff, 0xffffffff, 0xff0000ff, 0xff0000ff,
-            0xffffffff, 0xff0000ff, 0xffffffff, 0xffffffff, 0xff0000ff,
-            0xffffffff, 0xff0000ff, 0xff0000ff, 0xffffffff, 0xff0000ff,
-            0xffffffff,
-        ];
-        let texture =
-            Texture::from_rgba8(ctx, 4, 4, bytemuck::cast_slice(pixels));
+        let (pixels, width, height, format) = read_png_rgb(
+            &options
+                .resource_pack_path
+                .join("assets/minecraft/textures/block/grass_block_side.png"),
+        );
+        let texture = Texture::from_data_and_format(
+            ctx,
+            &pixels,
+            TextureParams {
+                format,
+                wrap: miniquad::TextureWrap::Repeat,
+                filter: FilterMode::Nearest,
+                width,
+                height,
+            },
+        );
         texture.set_filter(ctx, FilterMode::Nearest);
 
         let bindings = Bindings {
@@ -225,5 +234,28 @@ impl EventHandler for Renderer {
         ctx.draw(0, 6, 1);
         ctx.end_render_pass();
         ctx.commit_frame();
+    }
+}
+
+fn read_png_rgb(path: &Path) -> (Box<[u8]>, u32, u32, TextureFormat) {
+    let raster = png_pong::Decoder::new(File::open(path).unwrap())
+        .unwrap()
+        .into_steps()
+        .next()
+        .unwrap()
+        .unwrap()
+        .raster;
+    match raster {
+        png_pong::PngRaster::Rgb8(raster) => {
+            let width = raster.width();
+            let height = raster.height();
+            (raster.into(), width, height, TextureFormat::RGB8)
+        }
+        png_pong::PngRaster::Rgba8(raster) => {
+            let width = raster.width();
+            let height = raster.height();
+            (raster.into(), width, height, TextureFormat::RGBA8)
+        }
+        _ => todo!(),
     }
 }
