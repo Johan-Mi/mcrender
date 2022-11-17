@@ -13,4 +13,5 @@ bytemuck = "1.12.3"
 glam = "0.22.0"
 hematite-nbt = "0.5.2"
 internment = { version = "0.7.0", features = ["serde"] }
+miniquad = "0.3.14"
 serde = { version = "1.0.147", features = ["derive"] }

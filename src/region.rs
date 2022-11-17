@@ -1,4 +1,4 @@
-use crate::{chunk::Chunk, render::RenderOptions};
+use crate::{chunk::Chunk, Options};
 use glam::IVec2;
 use std::{
     collections::HashMap,
@@ -14,7 +14,7 @@ pub struct Region {
 impl Region {
     pub fn load_all(
         world_path: &Path,
-        options: &RenderOptions,
+        options: &Options,
     ) -> HashMap<IVec2, Self> {
         fs::read_dir(world_path.join("region"))
             .unwrap()
