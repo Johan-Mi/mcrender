@@ -24,8 +24,6 @@ pub fn render(world: &World, options: Options) {
 struct Vertex {
     #[allow(dead_code)]
     pos: Vec3,
-    #[allow(dead_code)]
-    uv: Vec2,
 }
 
 struct Renderer {
@@ -50,15 +48,14 @@ struct Renderer {
 impl Renderer {
     fn new(options: Options, ctx: &mut Context) -> Self {
         let vertices = {
-            let v = |x, y, z, u, v| Vertex {
+            let v = |x, y, z| Vertex {
                 pos: Vec3 { x, y, z },
-                uv: Vec2 { x: u, y: v },
             };
             [
-                v(-1.0, -1.0, 1.0, 0.0, 1.0),
-                v(1.0, -1.0, 1.0, 1.0, 1.0),
-                v(1.0, 1.0, 1.0, 1.0, 0.0),
-                v(-1.0, 1.0, 1.0, 0.0, 0.0),
+                v(0.0, 0.0, 1.0),
+                v(1.0, 0.0, 1.0),
+                v(1.0, 1.0, 1.0),
+                v(0.0, 1.0, 1.0),
             ]
         };
         let vertex_buffer =
@@ -99,10 +96,7 @@ impl Renderer {
         let pipeline = Pipeline::new(
             ctx,
             &[BufferLayout::default()],
-            &[
-                VertexAttribute::new("pos", VertexFormat::Float3),
-                VertexAttribute::new("uv", VertexFormat::Float2),
-            ],
+            &[VertexAttribute::new("pos", VertexFormat::Float3)],
             shader,
         );
 

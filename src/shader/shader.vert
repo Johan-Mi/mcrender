@@ -1,13 +1,12 @@
 #version 100
 
 attribute vec4 pos;
-attribute vec2 uv;
 
 uniform mat4 view;
 
-varying lowp vec2 texcoord;
+varying lowp vec3 worldcoord;
 
 void main() {
     gl_Position = view * pos;
-    texcoord = uv;
+    worldcoord = pos.xyz;
 }
