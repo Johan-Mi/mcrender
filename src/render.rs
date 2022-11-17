@@ -107,8 +107,7 @@ impl Renderer {
             &[VertexAttribute::new("pos", VertexFormat::Float3)],
             shader,
             PipelineParams {
-                cull_face: miniquad::CullFace::Front,
-                front_face_order: miniquad::FrontFaceOrder::Clockwise,
+                cull_face: miniquad::CullFace::Back,
                 ..Default::default()
             },
         );
