@@ -52,16 +52,23 @@ impl Renderer {
                 pos: Vec3 { x, y, z },
             };
             [
+                v(0.0, 0.0, 0.0),
                 v(0.0, 0.0, 1.0),
-                v(1.0, 0.0, 1.0),
-                v(1.0, 1.0, 1.0),
+                v(0.0, 1.0, 0.0),
                 v(0.0, 1.0, 1.0),
+                v(1.0, 0.0, 0.0),
+                v(1.0, 0.0, 1.0),
+                v(1.0, 1.0, 0.0),
+                v(1.0, 1.0, 1.0),
             ]
         };
         let vertex_buffer =
             Buffer::immutable(ctx, BufferType::VertexBuffer, &vertices);
 
-        let indices = [0, 1, 2, 0, 2, 3];
+        let indices = [
+            0, 2, 4, 2, 6, 4, 1, 3, 5, 3, 7, 5, 0, 2, 1, 2, 3, 1, 4, 6, 5, 6,
+            7, 5, 0, 4, 1, 4, 5, 1, 2, 6, 3, 6, 7, 3,
+        ];
         let index_buffer =
             Buffer::immutable(ctx, BufferType::IndexBuffer, &indices);
 
@@ -225,7 +232,7 @@ impl EventHandler for Renderer {
         ctx.apply_pipeline(&self.pipeline);
         ctx.apply_bindings(&self.bindings);
         ctx.apply_uniforms(&vs_params);
-        ctx.draw(0, 6, 1);
+        ctx.draw(0, 36, 1);
         ctx.end_render_pass();
         ctx.commit_frame();
     }
