@@ -6,8 +6,9 @@ use crate::{
 use glam::{Mat3, Mat4, Vec2, Vec3};
 use miniquad::{
     conf::Conf, Bindings, Buffer, BufferLayout, BufferType, Context,
-    EventHandler, FilterMode, KeyCode, PassAction, Pipeline, Shader, Texture,
-    TextureFormat, TextureParams, VertexAttribute, VertexFormat,
+    EventHandler, FilterMode, KeyCode, PassAction, Pipeline, PipelineParams,
+    Shader, Texture, TextureFormat, TextureParams, VertexAttribute,
+    VertexFormat,
 };
 use std::{fs::File, path::Path};
 
@@ -66,8 +67,8 @@ impl Renderer {
             Buffer::immutable(ctx, BufferType::VertexBuffer, &vertices);
 
         let indices = [
-            0, 2, 4, 2, 6, 4, 1, 3, 5, 3, 7, 5, 0, 2, 1, 2, 3, 1, 4, 6, 5, 6,
-            7, 5, 0, 4, 1, 4, 5, 1, 2, 6, 3, 6, 7, 3,
+            0, 2, 4, 2, 6, 4, 1, 5, 3, 3, 5, 7, 0, 1, 2, 2, 1, 3, 4, 6, 5, 6,
+            7, 5, 0, 4, 1, 4, 5, 1, 2, 3, 6, 6, 3, 7,
         ];
         let index_buffer =
             Buffer::immutable(ctx, BufferType::IndexBuffer, &indices);
@@ -100,11 +101,16 @@ impl Renderer {
             Shader::new(ctx, shader::VERTEX, shader::FRAGMENT, shader::meta())
                 .unwrap();
 
-        let pipeline = Pipeline::new(
+        let pipeline = Pipeline::with_params(
             ctx,
             &[BufferLayout::default()],
             &[VertexAttribute::new("pos", VertexFormat::Float3)],
             shader,
+            PipelineParams {
+                cull_face: miniquad::CullFace::Front,
+                front_face_order: miniquad::FrontFaceOrder::Clockwise,
+                ..Default::default()
+            },
         );
 
         Self {
