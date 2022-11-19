@@ -67,8 +67,8 @@ impl Renderer {
             Buffer::immutable(ctx, BufferType::VertexBuffer, &vertices);
 
         let indices = [
-            0, 2, 4, 2, 6, 4, 1, 5, 3, 3, 5, 7, 0, 1, 2, 2, 1, 3, 4, 6, 5, 6,
-            7, 5, 0, 4, 1, 4, 5, 1, 2, 3, 6, 6, 3, 7,
+            0, 4, 2, 2, 4, 6, 1, 3, 5, 3, 7, 5, 0, 2, 1, 2, 3, 1, 4, 5, 6, 6,
+            5, 7, 0, 1, 4, 4, 1, 5, 2, 6, 3, 6, 7, 3,
         ];
         let index_buffer =
             Buffer::immutable(ctx, BufferType::IndexBuffer, &indices);
@@ -144,10 +144,10 @@ impl Renderer {
 impl EventHandler for Renderer {
     fn update(&mut self, _ctx: &mut miniquad::Context) {
         if self.key_h {
-            self.camera_yaw += TURN_SPEED;
+            self.camera_yaw -= TURN_SPEED;
         }
         if self.key_l {
-            self.camera_yaw -= TURN_SPEED;
+            self.camera_yaw += TURN_SPEED;
         }
         if self.key_j {
             self.camera_pitch += TURN_SPEED;
@@ -170,7 +170,7 @@ impl EventHandler for Renderer {
         let f32_from_bool = |b| if b { 1.0 } else { 0.0 };
         self.camera_position += Mat3::from_rotation_y(self.camera_yaw)
             * Vec3 {
-                x: f32_from_bool(self.key_a) - f32_from_bool(self.key_d),
+                x: f32_from_bool(self.key_d) - f32_from_bool(self.key_a),
                 y: 0.0,
                 z: f32_from_bool(self.key_w) - f32_from_bool(self.key_s),
             }
