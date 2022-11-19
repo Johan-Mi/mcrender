@@ -12,7 +12,9 @@ opt-level = 1
 bytemuck = "1.12.3"
 glam = "0.22.0"
 hematite-nbt = "0.5.2"
+indexmap = "1.9.2"
 internment = { version = "0.7.0", features = ["serde"] }
+itertools = "0.10.5"
 lazy_static = "1.4.0"
 miniquad = "0.3.14"
 png_pong = "0.8.2"

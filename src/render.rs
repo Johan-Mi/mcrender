@@ -5,6 +5,7 @@ use crate::{
     Options,
 };
 use glam::{Mat3, Mat4, Vec3};
+use itertools::Itertools;
 use miniquad::{
     conf::Conf, Bindings, Buffer, BufferLayout, BufferType, Context,
     EventHandler, FilterMode, KeyCode, PassAction, Pipeline, PipelineParams,
@@ -53,18 +54,12 @@ impl Renderer {
             Buffer::immutable(ctx, BufferType::IndexBuffer, &mesh.indices);
 
         let pixels = mesh
-            .texture_file_names
+            .texture_names
             .iter()
-            .flat_map(|file_name| {
-                Vec::from(
-                    read_png_rgb(
-                        &options
-                            .resource_pack_path
-                            .join("assets/minecraft/textures/block")
-                            .join(file_name),
-                    )
-                    .0,
-                )
+            .flat_map(|name| {
+                Vec::from(read_block_texture(&options.resource_pack_path.join(
+                    format!("assets/minecraft/textures/block/{name}.png"),
+                )))
             })
             .collect::<Vec<u8>>();
         let texture = Texture::from_data_and_format(
@@ -75,7 +70,7 @@ impl Renderer {
                 wrap: miniquad::TextureWrap::Repeat,
                 filter: FilterMode::Nearest,
                 width: 16,
-                height: mesh.texture_file_names.len() as u32 * 16,
+                height: mesh.texture_names.len() as u32 * 16,
             },
         );
 
@@ -242,8 +237,12 @@ impl EventHandler for Renderer {
     }
 }
 
-fn read_png_rgb(path: &Path) -> (Box<[u8]>, u32, u32, TextureFormat) {
-    let raster = png_pong::Decoder::new(File::open(path).unwrap())
+fn read_block_texture(path: &Path) -> Box<[u8]> {
+    let Ok(file) = File::open(path) else {
+        eprintln!("Missing block texture: {}", path.display());
+        return Box::new([255; 16 * 16 * 4]);
+    };
+    let raster = png_pong::Decoder::new(file)
         .unwrap()
         .into_steps()
         .next()
@@ -251,15 +250,20 @@ fn read_png_rgb(path: &Path) -> (Box<[u8]>, u32, u32, TextureFormat) {
         .unwrap()
         .raster;
     match raster {
-        png_pong::PngRaster::Rgb8(raster) => {
-            let width = raster.width();
-            let height = raster.height();
-            (raster.into(), width, height, TextureFormat::RGB8)
-        }
         png_pong::PngRaster::Rgba8(raster) => {
-            let width = raster.width();
-            let height = raster.height();
-            (raster.into(), width, height, TextureFormat::RGBA8)
+            assert_eq!(raster.width(), 16);
+            assert_eq!(raster.height(), 16);
+            raster.into()
+        }
+        png_pong::PngRaster::Rgb8(raster) => {
+            assert_eq!(raster.width(), 16);
+            assert_eq!(raster.height(), 16);
+            <Box<[u8]>>::from(raster)
+                .to_vec()
+                .into_iter()
+                .tuples()
+                .flat_map(|(r, g, b)| [r, g, b, 255])
+                .collect()
         }
         _ => todo!(),
     }
