@@ -1,4 +1,5 @@
 use crate::{
+    mesh::{Mesh, Vertex},
     shader::{self, Uniforms},
     world::World,
     Options,
@@ -16,15 +17,10 @@ const MOVE_SPEED: f32 = 0.2;
 const FLY_SPEED: f32 = 0.2;
 const TURN_SPEED: f32 = 0.04;
 
-pub fn render(world: &World, options: Options) {
+pub fn render(world: World, options: Options) {
     miniquad::start(Conf::default(), |ctx| {
-        Box::new(Renderer::new(options, ctx))
+        Box::new(Renderer::new(options, world, ctx))
     });
-}
-
-struct Vertex {
-    #[allow(dead_code)]
-    pos: Vec3,
 }
 
 struct Renderer {
@@ -47,31 +43,12 @@ struct Renderer {
 }
 
 impl Renderer {
-    fn new(options: Options, ctx: &mut Context) -> Self {
-        let vertices = {
-            let v = |x, y, z| Vertex {
-                pos: Vec3 { x, y, z },
-            };
-            [
-                v(0.0, 0.0, 0.0),
-                v(0.0, 0.0, 1.0),
-                v(0.0, 1.0, 0.0),
-                v(0.0, 1.0, 1.0),
-                v(1.0, 0.0, 0.0),
-                v(1.0, 0.0, 1.0),
-                v(1.0, 1.0, 0.0),
-                v(1.0, 1.0, 1.0),
-            ]
-        };
+    fn new(options: Options, world: World, ctx: &mut Context) -> Self {
+        let mesh = Mesh::build(&world);
         let vertex_buffer =
-            Buffer::immutable(ctx, BufferType::VertexBuffer, &vertices);
-
-        let indices = [
-            0, 4, 2, 2, 4, 6, 1, 3, 5, 3, 7, 5, 0, 2, 1, 2, 3, 1, 4, 5, 6, 6,
-            5, 7, 0, 1, 4, 4, 1, 5, 2, 6, 3, 6, 7, 3,
-        ];
+            Buffer::immutable(ctx, BufferType::VertexBuffer, &mesh.vertices);
         let index_buffer =
-            Buffer::immutable(ctx, BufferType::IndexBuffer, &indices);
+            Buffer::immutable(ctx, BufferType::IndexBuffer, &mesh.indices);
 
         let (pixels, width, height, format) = read_png_rgb(
             &options

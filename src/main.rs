@@ -46,5 +46,5 @@ fn main() {
 
     let world = World::new(Path::new(&world_path), &options);
 
-    render::render(&world, options);
+    render::render(world, options);
 }
