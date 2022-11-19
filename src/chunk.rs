@@ -54,7 +54,7 @@ impl Default for BlockStates {
     fn default() -> Self {
         Self {
             palette: vec![Intern::new(Block {
-                name: "minecraft:air".to_owned(),
+                name: Intern::from_ref("minecraft:air"),
             })],
             data: Box::new([0; 4096]),
         }
@@ -106,5 +106,5 @@ impl<'de> Deserialize<'de> for BlockStates {
 #[derive(Debug, PartialEq, Eq, Hash, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Block {
-    pub name: String,
+    pub name: Intern<Box<str>>,
 }
