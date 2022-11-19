@@ -52,17 +52,21 @@ impl Renderer {
         let index_buffer =
             Buffer::immutable(ctx, BufferType::IndexBuffer, &mesh.indices);
 
-        let pixels = [
-            "assets/minecraft/textures/block/grass_block_side.png",
-            "assets/minecraft/textures/block/stone.png",
-        ]
-        .iter()
-        .flat_map(|file_name| {
-            Vec::from(
-                read_png_rgb(&options.resource_pack_path.join(file_name)).0,
-            )
-        })
-        .collect::<Vec<u8>>();
+        let pixels = mesh
+            .texture_file_names
+            .iter()
+            .flat_map(|file_name| {
+                Vec::from(
+                    read_png_rgb(
+                        &options
+                            .resource_pack_path
+                            .join("assets/minecraft/textures/block")
+                            .join(file_name),
+                    )
+                    .0,
+                )
+            })
+            .collect::<Vec<u8>>();
         let texture = Texture::from_data_and_format(
             ctx,
             &pixels,
@@ -71,7 +75,7 @@ impl Renderer {
                 wrap: miniquad::TextureWrap::Repeat,
                 filter: FilterMode::Nearest,
                 width: 16,
-                height: 32,
+                height: mesh.texture_file_names.len() as u32 * 16,
             },
         );
 

@@ -13,6 +13,7 @@ const BOTTOM_LIGHT_LEVEL: f32 = 0.6;
 pub struct Mesh {
     pub vertices: Vec<Vertex>,
     pub indices: Vec<u32>,
+    pub texture_file_names: Vec<&'static str>,
 }
 
 impl Mesh {
@@ -182,7 +183,11 @@ impl Mesh {
             }
         }
 
-        Self { vertices, indices }
+        Self {
+            vertices,
+            indices,
+            texture_file_names: vec!["grass_block_side.png", "stone.png"],
+        }
     }
 }
 
