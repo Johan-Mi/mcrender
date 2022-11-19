@@ -3,7 +3,7 @@ use crate::{
     world::World,
     Options,
 };
-use glam::{Mat3, Mat4, Vec2, Vec3};
+use glam::{Mat3, Mat4, Vec3};
 use miniquad::{
     conf::Conf, Bindings, Buffer, BufferLayout, BufferType, Context,
     EventHandler, FilterMode, KeyCode, PassAction, Pipeline, PipelineParams,
