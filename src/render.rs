@@ -89,7 +89,6 @@ impl Renderer {
                 height,
             },
         );
-        texture.set_filter(ctx, FilterMode::Nearest);
 
         let bindings = Bindings {
             vertex_buffers: vec![vertex_buffer],
