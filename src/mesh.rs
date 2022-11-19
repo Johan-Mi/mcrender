@@ -30,12 +30,6 @@ impl Mesh {
         let mut vertices = Vec::new();
         let mut indices = Vec::new();
 
-        let v = |pos, u, v, light_level| Vertex {
-            pos,
-            uv: Vec2 { x: u, y: v },
-            light_level,
-        };
-
         for y in -64..320 {
             for z in options.area.start.y..options.area.end.y {
                 for x in options.area.start.x..options.area.end.x {
@@ -46,6 +40,20 @@ impl Mesh {
                     if !is_solid(block) {
                         continue;
                     }
+
+                    let texture_index = if &**block.name == "minecraft:stone" {
+                        1.0
+                    } else {
+                        0.0
+                    };
+
+                    let v = |pos, u, v, light_level| Vertex {
+                        pos,
+                        uv: Vec2 { x: u, y: v },
+                        light_level,
+                        texture_index,
+                    };
+
                     if !world.block_at(p - IVec3::X).map_or(false, is_solid) {
                         let p = p.as_vec3();
                         let vertex_count = vertices.len() as u32;
@@ -196,4 +204,5 @@ pub struct Vertex {
     pub pos: Vec3,
     pub uv: Vec2,
     pub light_level: f32,
+    pub texture_index: f32,
 }
