@@ -14,17 +14,21 @@ impl World {
         }
     }
 
-    fn block_at(&self, pos: IVec3) -> Intern<Block> {
-        let region = &self.regions[&(pos.xz() >> 9)];
+    fn block_at(&self, pos: IVec3) -> Option<Intern<Block>> {
+        let region = &self.regions.get(&(pos.xz() >> 9))?;
         let chunk = region.chunks[(pos.z >> 4).rem_euclid(32) as usize]
             [(pos.x >> 4).rem_euclid(32) as usize]
-            .as_ref()
-            .unwrap();
+            .as_ref()?;
         let section = &chunk.sections[(pos.y + 64) as usize / 16];
         let offset_within_section = pos.y.rem_euclid(16) * 256
             + pos.z.rem_euclid(16) * 16
             + pos.x.rem_euclid(16);
-        section.block_states.palette
-            [section.block_states.data[offset_within_section as usize] as usize]
+        Some(
+            section.block_states.palette[*section
+                .block_states
+                .data
+                .get(offset_within_section as usize)?
+                as usize],
+        )
     }
 }
