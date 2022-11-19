@@ -91,6 +91,7 @@ impl Renderer {
             PipelineParams {
                 cull_face: miniquad::CullFace::Back,
                 depth_test: miniquad::Comparison::Less,
+                depth_write: true,
                 ..Default::default()
             },
         );
