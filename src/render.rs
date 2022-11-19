@@ -188,6 +188,8 @@ impl EventHandler for Renderer {
             KeyCode::L => self.key_l = true,
             KeyCode::Space => self.key_space = true,
             KeyCode::LeftShift => self.key_shift = true,
+            KeyCode::O => self.vfov += 0.05,
+            KeyCode::I => self.vfov -= 0.05,
             _ => {}
         }
     }
