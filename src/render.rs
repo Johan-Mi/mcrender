@@ -128,10 +128,10 @@ impl Renderer {
 impl EventHandler for Renderer {
     fn update(&mut self, _ctx: &mut miniquad::Context) {
         if self.key_h {
-            self.camera_yaw -= TURN_SPEED;
+            self.camera_yaw += TURN_SPEED;
         }
         if self.key_l {
-            self.camera_yaw += TURN_SPEED;
+            self.camera_yaw -= TURN_SPEED;
         }
         if self.key_j {
             self.camera_pitch += TURN_SPEED;
@@ -154,7 +154,7 @@ impl EventHandler for Renderer {
         let f32_from_bool = |b| if b { 1.0 } else { 0.0 };
         self.camera_position += Mat3::from_rotation_y(self.camera_yaw)
             * Vec3 {
-                x: f32_from_bool(self.key_d) - f32_from_bool(self.key_a),
+                x: f32_from_bool(self.key_a) - f32_from_bool(self.key_d),
                 y: 0.0,
                 z: f32_from_bool(self.key_w) - f32_from_bool(self.key_s),
             }

@@ -8,6 +8,6 @@ uniform mat4 view;
 varying lowp vec2 texcoord;
 
 void main() {
-    gl_Position = view * pos * vec4(-1, 1, 1, 1);
+    gl_Position = view * pos;
     texcoord = uv;
 }

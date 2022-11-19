@@ -51,11 +51,11 @@ impl Mesh {
                         ]);
                         indices.extend([
                             vertex_count,
-                            vertex_count + 2,
-                            vertex_count + 1,
                             vertex_count + 1,
                             vertex_count + 2,
+                            vertex_count + 1,
                             vertex_count + 3,
+                            vertex_count + 2,
                         ]);
                     }
                     if !world.block_at(p + IVec3::X).map_or(false, is_solid) {
@@ -69,11 +69,11 @@ impl Mesh {
                         ]);
                         indices.extend([
                             vertex_count,
-                            vertex_count + 1,
                             vertex_count + 2,
                             vertex_count + 1,
+                            vertex_count + 1,
+                            vertex_count + 2,
                             vertex_count + 3,
-                            vertex_count + 2,
                         ]);
                     }
                     if !world.block_at(p - IVec3::Y).map_or(false, is_solid) {
@@ -87,11 +87,11 @@ impl Mesh {
                         ]);
                         indices.extend([
                             vertex_count,
-                            vertex_count + 2,
-                            vertex_count + 1,
                             vertex_count + 1,
                             vertex_count + 2,
+                            vertex_count + 1,
                             vertex_count + 3,
+                            vertex_count + 2,
                         ]);
                     }
                     if !world.block_at(p + IVec3::Y).map_or(false, is_solid) {
@@ -105,11 +105,11 @@ impl Mesh {
                         ]);
                         indices.extend([
                             vertex_count,
-                            vertex_count + 1,
                             vertex_count + 2,
                             vertex_count + 1,
+                            vertex_count + 1,
+                            vertex_count + 2,
                             vertex_count + 3,
-                            vertex_count + 2,
                         ]);
                     }
                     if !world.block_at(p - IVec3::Z).map_or(false, is_solid) {
@@ -123,11 +123,11 @@ impl Mesh {
                         ]);
                         indices.extend([
                             vertex_count,
-                            vertex_count + 1,
                             vertex_count + 2,
                             vertex_count + 1,
+                            vertex_count + 1,
+                            vertex_count + 2,
                             vertex_count + 3,
-                            vertex_count + 2,
                         ]);
                     }
                     if !world.block_at(p + IVec3::Z).map_or(false, is_solid) {
@@ -141,11 +141,11 @@ impl Mesh {
                         ]);
                         indices.extend([
                             vertex_count,
-                            vertex_count + 2,
-                            vertex_count + 1,
                             vertex_count + 1,
                             vertex_count + 2,
+                            vertex_count + 1,
                             vertex_count + 3,
+                            vertex_count + 2,
                         ]);
                     }
                 }
