@@ -89,6 +89,7 @@ impl Renderer {
             shader,
             PipelineParams {
                 cull_face: miniquad::CullFace::Back,
+                depth_test: miniquad::Comparison::Less,
                 ..Default::default()
             },
         );
