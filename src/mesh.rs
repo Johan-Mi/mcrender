@@ -191,6 +191,7 @@ fn is_solid(block: Intern<Block>) -> bool {
     block != *AIR
 }
 
+#[repr(C)]
 pub struct Vertex {
     pub pos: Vec3,
     pub uv: Vec2,
