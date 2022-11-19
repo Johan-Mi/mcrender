@@ -85,6 +85,7 @@ impl Renderer {
             &[
                 VertexAttribute::new("pos", VertexFormat::Float3),
                 VertexAttribute::new("uv", VertexFormat::Float2),
+                VertexAttribute::new("light_level", VertexFormat::Float1),
             ],
             shader,
             PipelineParams {

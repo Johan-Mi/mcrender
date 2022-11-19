@@ -5,6 +5,11 @@ use crate::{
 use glam::{IVec3, Vec2, Vec3};
 use internment::Intern;
 
+const TOP_LIGHT_LEVEL: f32 = 1.0;
+const FRONT_BACK_LIGHT_LEVEL: f32 = 0.85;
+const SIDE_LIGHT_LEVEL: f32 = 0.75;
+const BOTTOM_LIGHT_LEVEL: f32 = 0.6;
+
 pub struct Mesh {
     pub vertices: Vec<Vertex>,
     pub indices: Vec<u32>,
@@ -25,9 +30,10 @@ impl Mesh {
         let mut vertices = Vec::new();
         let mut indices = Vec::new();
 
-        let v = |pos, u, v| Vertex {
+        let v = |pos, u, v, light_level| Vertex {
             pos,
             uv: Vec2 { x: u, y: v },
+            light_level,
         };
 
         for y in -64..320 {
@@ -44,10 +50,15 @@ impl Mesh {
                         let p = p.as_vec3();
                         let vertex_count = vertices.len() as u32;
                         vertices.extend([
-                            v(p, 0.0, 1.0),
-                            v(p + Vec3::Z, 1.0, 1.0),
-                            v(p + Vec3::Y, 0.0, 0.0),
-                            v(p + Vec3::Z + Vec3::Y, 1.0, 0.0),
+                            v(p, 0.0, 1.0, SIDE_LIGHT_LEVEL),
+                            v(p + Vec3::Z, 1.0, 1.0, SIDE_LIGHT_LEVEL),
+                            v(p + Vec3::Y, 0.0, 0.0, SIDE_LIGHT_LEVEL),
+                            v(
+                                p + Vec3::Z + Vec3::Y,
+                                1.0,
+                                0.0,
+                                SIDE_LIGHT_LEVEL,
+                            ),
                         ]);
                         indices.extend([
                             vertex_count,
@@ -62,10 +73,15 @@ impl Mesh {
                         let p = p.as_vec3() + Vec3::X;
                         let vertex_count = vertices.len() as u32;
                         vertices.extend([
-                            v(p, 0.0, 1.0),
-                            v(p + Vec3::Z, 1.0, 1.0),
-                            v(p + Vec3::Y, 0.0, 0.0),
-                            v(p + Vec3::Z + Vec3::Y, 1.0, 0.0),
+                            v(p, 0.0, 1.0, SIDE_LIGHT_LEVEL),
+                            v(p + Vec3::Z, 1.0, 1.0, SIDE_LIGHT_LEVEL),
+                            v(p + Vec3::Y, 0.0, 0.0, SIDE_LIGHT_LEVEL),
+                            v(
+                                p + Vec3::Z + Vec3::Y,
+                                1.0,
+                                0.0,
+                                SIDE_LIGHT_LEVEL,
+                            ),
                         ]);
                         indices.extend([
                             vertex_count,
@@ -80,10 +96,15 @@ impl Mesh {
                         let p = p.as_vec3();
                         let vertex_count = vertices.len() as u32;
                         vertices.extend([
-                            v(p, 0.0, 1.0),
-                            v(p + Vec3::X, 1.0, 1.0),
-                            v(p + Vec3::Z, 0.0, 0.0),
-                            v(p + Vec3::X + Vec3::Z, 1.0, 0.0),
+                            v(p, 0.0, 1.0, BOTTOM_LIGHT_LEVEL),
+                            v(p + Vec3::X, 1.0, 1.0, BOTTOM_LIGHT_LEVEL),
+                            v(p + Vec3::Z, 0.0, 0.0, BOTTOM_LIGHT_LEVEL),
+                            v(
+                                p + Vec3::X + Vec3::Z,
+                                1.0,
+                                0.0,
+                                BOTTOM_LIGHT_LEVEL,
+                            ),
                         ]);
                         indices.extend([
                             vertex_count,
@@ -98,10 +119,10 @@ impl Mesh {
                         let p = p.as_vec3() + Vec3::Y;
                         let vertex_count = vertices.len() as u32;
                         vertices.extend([
-                            v(p, 0.0, 1.0),
-                            v(p + Vec3::X, 1.0, 1.0),
-                            v(p + Vec3::Z, 0.0, 0.0),
-                            v(p + Vec3::X + Vec3::Z, 1.0, 0.0),
+                            v(p, 0.0, 1.0, TOP_LIGHT_LEVEL),
+                            v(p + Vec3::X, 1.0, 1.0, TOP_LIGHT_LEVEL),
+                            v(p + Vec3::Z, 0.0, 0.0, TOP_LIGHT_LEVEL),
+                            v(p + Vec3::X + Vec3::Z, 1.0, 0.0, TOP_LIGHT_LEVEL),
                         ]);
                         indices.extend([
                             vertex_count,
@@ -116,10 +137,15 @@ impl Mesh {
                         let p = p.as_vec3();
                         let vertex_count = vertices.len() as u32;
                         vertices.extend([
-                            v(p, 0.0, 1.0),
-                            v(p + Vec3::X, 1.0, 1.0),
-                            v(p + Vec3::Y, 0.0, 0.0),
-                            v(p + Vec3::X + Vec3::Y, 1.0, 0.0),
+                            v(p, 0.0, 1.0, FRONT_BACK_LIGHT_LEVEL),
+                            v(p + Vec3::X, 1.0, 1.0, FRONT_BACK_LIGHT_LEVEL),
+                            v(p + Vec3::Y, 0.0, 0.0, FRONT_BACK_LIGHT_LEVEL),
+                            v(
+                                p + Vec3::X + Vec3::Y,
+                                1.0,
+                                0.0,
+                                FRONT_BACK_LIGHT_LEVEL,
+                            ),
                         ]);
                         indices.extend([
                             vertex_count,
@@ -134,10 +160,15 @@ impl Mesh {
                         let p = p.as_vec3() + Vec3::Z;
                         let vertex_count = vertices.len() as u32;
                         vertices.extend([
-                            v(p, 0.0, 1.0),
-                            v(p + Vec3::X, 1.0, 1.0),
-                            v(p + Vec3::Y, 0.0, 0.0),
-                            v(p + Vec3::X + Vec3::Y, 1.0, 0.0),
+                            v(p, 0.0, 1.0, FRONT_BACK_LIGHT_LEVEL),
+                            v(p + Vec3::X, 1.0, 1.0, FRONT_BACK_LIGHT_LEVEL),
+                            v(p + Vec3::Y, 0.0, 0.0, FRONT_BACK_LIGHT_LEVEL),
+                            v(
+                                p + Vec3::X + Vec3::Y,
+                                1.0,
+                                0.0,
+                                FRONT_BACK_LIGHT_LEVEL,
+                            ),
                         ]);
                         indices.extend([
                             vertex_count,
@@ -163,4 +194,5 @@ fn is_solid(block: Intern<Block>) -> bool {
 pub struct Vertex {
     pub pos: Vec3,
     pub uv: Vec2,
+    pub light_level: f32,
 }
