@@ -1,5 +1,9 @@
-use crate::{chunk::Block, World};
-use glam::Vec3;
+use crate::{
+    chunk::{Block, AIR},
+    Options, World,
+};
+use glam::{IVec3, Vec2, Vec3};
+use internment::Intern;
 
 pub struct Mesh {
     pub vertices: Vec<Vertex>,
@@ -7,7 +11,7 @@ pub struct Mesh {
 }
 
 impl Mesh {
-    pub fn build(world: &World) -> Self {
+    pub fn build(world: &World, options: &Options) -> Self {
         // # The plan:
         // - Loop through each pair of opposite faces (e.g. top then bottom,
         //   front then back, left then right)
@@ -18,35 +22,145 @@ impl Mesh {
         // - Perform greedy meshing
         // - ???
         // - Profit!
+        let mut vertices = Vec::new();
+        let mut indices = Vec::new();
 
-        // Temporary cube model
-        let v = |x, y, z| Vertex {
-            pos: Vec3 { x, y, z },
+        let v = |pos, u, v| Vertex {
+            pos,
+            uv: Vec2 { x: u, y: v },
         };
-        Self {
-            vertices: vec![
-                v(0.0, 0.0, 0.0),
-                v(0.0, 0.0, 1.0),
-                v(0.0, 1.0, 0.0),
-                v(0.0, 1.0, 1.0),
-                v(1.0, 0.0, 0.0),
-                v(1.0, 0.0, 1.0),
-                v(1.0, 1.0, 0.0),
-                v(1.0, 1.0, 1.0),
-            ],
-            indices: vec![
-                0, 4, 2, 2, 4, 6, 1, 3, 5, 3, 7, 5, 0, 2, 1, 2, 3, 1, 4, 5, 6,
-                6, 5, 7, 0, 1, 4, 4, 1, 5, 2, 6, 3, 6, 7, 3,
-            ],
+
+        for y in -64..320 {
+            for z in options.area.start.y..options.area.end.y {
+                for x in options.area.start.x..options.area.end.x {
+                    let p = IVec3 { x, y, z };
+                    let Some(block) = world.block_at(p) else {
+                        continue;
+                    };
+                    if !is_solid(block) {
+                        continue;
+                    }
+                    if !world.block_at(p - IVec3::X).map_or(false, is_solid) {
+                        let p = p.as_vec3();
+                        let vertex_count = vertices.len() as u32;
+                        vertices.extend([
+                            v(p, 0.0, 1.0),
+                            v(p + Vec3::Z, 1.0, 1.0),
+                            v(p + Vec3::Y, 0.0, 0.0),
+                            v(p + Vec3::Z + Vec3::Y, 1.0, 0.0),
+                        ]);
+                        indices.extend([
+                            vertex_count,
+                            vertex_count + 2,
+                            vertex_count + 1,
+                            vertex_count + 1,
+                            vertex_count + 2,
+                            vertex_count + 3,
+                        ]);
+                    }
+                    if !world.block_at(p + IVec3::X).map_or(false, is_solid) {
+                        let p = p.as_vec3() + Vec3::X;
+                        let vertex_count = vertices.len() as u32;
+                        vertices.extend([
+                            v(p, 0.0, 1.0),
+                            v(p + Vec3::Z, 1.0, 1.0),
+                            v(p + Vec3::Y, 0.0, 0.0),
+                            v(p + Vec3::Z + Vec3::Y, 1.0, 0.0),
+                        ]);
+                        indices.extend([
+                            vertex_count,
+                            vertex_count + 1,
+                            vertex_count + 2,
+                            vertex_count + 1,
+                            vertex_count + 3,
+                            vertex_count + 2,
+                        ]);
+                    }
+                    if !world.block_at(p - IVec3::Y).map_or(false, is_solid) {
+                        let p = p.as_vec3();
+                        let vertex_count = vertices.len() as u32;
+                        vertices.extend([
+                            v(p, 0.0, 1.0),
+                            v(p + Vec3::X, 1.0, 1.0),
+                            v(p + Vec3::Z, 0.0, 0.0),
+                            v(p + Vec3::X + Vec3::Z, 1.0, 0.0),
+                        ]);
+                        indices.extend([
+                            vertex_count,
+                            vertex_count + 2,
+                            vertex_count + 1,
+                            vertex_count + 1,
+                            vertex_count + 2,
+                            vertex_count + 3,
+                        ]);
+                    }
+                    if !world.block_at(p + IVec3::Y).map_or(false, is_solid) {
+                        let p = p.as_vec3() + Vec3::Y;
+                        let vertex_count = vertices.len() as u32;
+                        vertices.extend([
+                            v(p, 0.0, 1.0),
+                            v(p + Vec3::X, 1.0, 1.0),
+                            v(p + Vec3::Z, 0.0, 0.0),
+                            v(p + Vec3::X + Vec3::Z, 1.0, 0.0),
+                        ]);
+                        indices.extend([
+                            vertex_count,
+                            vertex_count + 1,
+                            vertex_count + 2,
+                            vertex_count + 1,
+                            vertex_count + 3,
+                            vertex_count + 2,
+                        ]);
+                    }
+                    if !world.block_at(p - IVec3::Z).map_or(false, is_solid) {
+                        let p = p.as_vec3();
+                        let vertex_count = vertices.len() as u32;
+                        vertices.extend([
+                            v(p, 0.0, 1.0),
+                            v(p + Vec3::X, 1.0, 1.0),
+                            v(p + Vec3::Y, 0.0, 0.0),
+                            v(p + Vec3::X + Vec3::Y, 1.0, 0.0),
+                        ]);
+                        indices.extend([
+                            vertex_count,
+                            vertex_count + 1,
+                            vertex_count + 2,
+                            vertex_count + 1,
+                            vertex_count + 3,
+                            vertex_count + 2,
+                        ]);
+                    }
+                    if !world.block_at(p + IVec3::Z).map_or(false, is_solid) {
+                        let p = p.as_vec3() + Vec3::Z;
+                        let vertex_count = vertices.len() as u32;
+                        vertices.extend([
+                            v(p, 0.0, 1.0),
+                            v(p + Vec3::X, 1.0, 1.0),
+                            v(p + Vec3::Y, 0.0, 0.0),
+                            v(p + Vec3::X + Vec3::Y, 1.0, 0.0),
+                        ]);
+                        indices.extend([
+                            vertex_count,
+                            vertex_count + 2,
+                            vertex_count + 1,
+                            vertex_count + 1,
+                            vertex_count + 2,
+                            vertex_count + 3,
+                        ]);
+                    }
+                }
+            }
         }
+
+        Self { vertices, indices }
     }
 }
 
-fn is_solid(block: &Block) -> bool {
-    todo!()
+fn is_solid(block: Intern<Block>) -> bool {
+    block != *AIR
 }
 
 pub struct Vertex {
-    #[allow(dead_code)]
     pub pos: Vec3,
+    pub uv: Vec2,
 }

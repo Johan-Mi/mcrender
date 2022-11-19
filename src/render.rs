@@ -1,5 +1,5 @@
 use crate::{
-    mesh::{Mesh, Vertex},
+    mesh::Mesh,
     shader::{self, Uniforms},
     world::World,
     Options,
@@ -26,6 +26,7 @@ pub fn render(world: World, options: Options) {
 struct Renderer {
     pipeline: Pipeline,
     bindings: Bindings,
+    vertex_count: i32,
     camera_position: Vec3,
     camera_pitch: f32,
     camera_yaw: f32,
@@ -44,7 +45,8 @@ struct Renderer {
 
 impl Renderer {
     fn new(options: Options, world: World, ctx: &mut Context) -> Self {
-        let mesh = Mesh::build(&world);
+        let mesh = Mesh::build(&world, &options);
+        let vertex_count = mesh.vertices.len() as i32;
         let vertex_buffer =
             Buffer::immutable(ctx, BufferType::VertexBuffer, &mesh.vertices);
         let index_buffer =
@@ -80,7 +82,10 @@ impl Renderer {
         let pipeline = Pipeline::with_params(
             ctx,
             &[BufferLayout::default()],
-            &[VertexAttribute::new("pos", VertexFormat::Float3)],
+            &[
+                VertexAttribute::new("pos", VertexFormat::Float3),
+                VertexAttribute::new("uv", VertexFormat::Float2),
+            ],
             shader,
             PipelineParams {
                 cull_face: miniquad::CullFace::Back,
@@ -91,6 +96,7 @@ impl Renderer {
         Self {
             pipeline,
             bindings,
+            vertex_count,
             camera_position: options.camera_position,
             camera_pitch: 0.0,
             camera_yaw: 0.0,
@@ -214,7 +220,7 @@ impl EventHandler for Renderer {
         ctx.apply_pipeline(&self.pipeline);
         ctx.apply_bindings(&self.bindings);
         ctx.apply_uniforms(&vs_params);
-        ctx.draw(0, 36, 1);
+        ctx.draw(0, self.vertex_count, 1);
         ctx.end_render_pass();
         ctx.commit_frame();
     }

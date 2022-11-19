@@ -2,6 +2,12 @@ use internment::Intern;
 use serde::Deserialize;
 use std::io::Cursor;
 
+lazy_static::lazy_static! {
+    pub static ref AIR: Intern<Block> = Intern::new(Block {
+        name: Intern::from_ref("minecraft:air"),
+    });
+}
+
 #[derive(Deserialize)]
 pub struct Chunk {
     pub sections: [Section; 24],
@@ -53,9 +59,7 @@ pub struct BlockStates {
 impl Default for BlockStates {
     fn default() -> Self {
         Self {
-            palette: vec![Intern::new(Block {
-                name: Intern::from_ref("minecraft:air"),
-            })],
+            palette: vec![*AIR],
             data: Box::new([0; 4096]),
         }
     }
