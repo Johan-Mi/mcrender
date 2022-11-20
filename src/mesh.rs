@@ -141,6 +141,16 @@ impl Mesh {
                                 .block_at(p + IVec3::Y)
                                 .map_or(false, is_solid)
                             {
+                                let texture_index =
+                                    self.block_top_texture_id(block);
+
+                                let v = |pos, u, v, light_level| Vertex {
+                                    pos,
+                                    uv: Vec2 { x: u, y: v },
+                                    light_level,
+                                    texture_index,
+                                };
+
                                 let p = p.as_vec3() + Vec3::Y;
                                 let vertex_count = self.vertices.len() as u32;
                                 self.vertices.extend([
@@ -333,6 +343,10 @@ impl Mesh {
         self.allocate_texture(block_texture_name(block)) as f32
     }
 
+    fn block_top_texture_id(&mut self, block: Intern<Block>) -> f32 {
+        self.allocate_texture(block_top_texture_name(block)) as f32
+    }
+
     fn allocate_texture(&mut self, texture_name: &'static str) -> usize {
         self.texture_names.insert_full(texture_name).0
     }
@@ -344,6 +358,14 @@ fn is_solid(block: Intern<Block>) -> bool {
 
 fn block_texture_name(block: Intern<Block>) -> &'static str {
     block.name.as_ref().strip_prefix("minecraft:").unwrap()
+}
+
+fn block_top_texture_name(block: Intern<Block>) -> &'static str {
+    match &**block.name {
+        "minecraft:podzol" => "podzol_top",
+        "minecraft:grass_block" => "grass_block_top",
+        _ => block_texture_name(block),
+    }
 }
 
 #[derive(Clone, Copy, PartialEq)]
