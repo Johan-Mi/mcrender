@@ -259,8 +259,8 @@ fn read_block_texture(path: &Path) -> Box<[u8]> {
             assert_eq!(raster.width(), 16);
             assert_eq!(raster.height(), 16);
             <Box<[u8]>>::from(raster)
-                .to_vec()
-                .into_iter()
+                .iter()
+                .copied()
                 .tuples()
                 .flat_map(|(r, g, b)| [r, g, b, 255])
                 .collect()
