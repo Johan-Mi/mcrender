@@ -8,11 +8,14 @@ uniform sampler2D tex;
 
 void main() {
     ivec2 atlas_size = textureSize(tex, 0);
-    gl_FragColor = texture(
+    vec4 color = texture(
         tex,
         vec2(
             texcoord.x,
             (texcoord.y + fragment_texture_index) * atlas_size.x / atlas_size.y
         )
     ) * fragment_light_level;
+    if (color.w == 0.0)
+        discard;
+    gl_FragColor = color;
 }
