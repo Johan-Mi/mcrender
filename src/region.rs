@@ -4,6 +4,7 @@ use std::{
     collections::HashMap,
     ffi::OsStr,
     fs::{self, DirEntry},
+    ops::Range,
     path::Path,
 };
 
@@ -31,7 +32,9 @@ impl Region {
                         ..options.area.end.y.rem_euclid(512))
                         .contains(&location.y)
             })
-            .map(|(entry, location)| Self::load(entry, location))
+            .map(|(entry, location)| {
+                Self::load(entry, options.area.clone(), location)
+            })
             .collect()
     }
 
@@ -49,7 +52,11 @@ impl Region {
         }
     }
 
-    fn load(entry: DirEntry, location: IVec2) -> (IVec2, Self) {
+    fn load(
+        entry: DirEntry,
+        area: Range<IVec2>,
+        location: IVec2,
+    ) -> (IVec2, Self) {
         let file = fs::read(entry.path()).unwrap();
 
         // This should really use `array::from_fn`, but that would overflow
@@ -57,7 +64,12 @@ impl Region {
         let mut chunks: [[Option<Chunk>; 32]; 32] = Default::default();
         for (chunk_z, column) in chunks.iter_mut().enumerate() {
             for (chunk_x, chunk) in column.iter_mut().enumerate() {
-                *chunk = Chunk::load(&file, chunk_x, chunk_z);
+                *chunk = Chunk::load(
+                    &file,
+                    area.clone(),
+                    chunk_x as i32 + location.x * 32,
+                    chunk_z as i32 + location.y * 32,
+                );
             }
         }
 

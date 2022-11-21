@@ -1,6 +1,7 @@
+use glam::IVec2;
 use internment::Intern;
 use serde::Deserialize;
-use std::io::Cursor;
+use std::{io::Cursor, ops::Range};
 
 lazy_static::lazy_static! {
     pub static ref AIR: Intern<Block> = Intern::new(Block {
@@ -14,12 +15,21 @@ pub struct Chunk {
 }
 
 impl Chunk {
-    pub fn load(file: &[u8], x: usize, z: usize) -> Option<Self> {
-        if x >= 2 || z >= 1 {
-            // Only load a few chunks to keep things fast
-            // TODO: let the user specify a specific part of the world to render
+    pub fn load(
+        file: &[u8],
+        area: Range<IVec2>,
+        x: i32,
+        z: i32,
+    ) -> Option<Self> {
+        if x * 16 < area.start.x
+            || x * 16 >= area.end.x
+            || z * 16 < area.start.y
+            || z * 16 >= area.end.y
+        {
             return None;
         }
+        let x = x.rem_euclid(32) as usize;
+        let z = z.rem_euclid(32) as usize;
         let locations: &[[u8; 4]] = bytemuck::cast_slice(&file[..4096]);
         let raw_location = locations[z * 32 + x];
         let data_offset = u32::from_be_bytes([
