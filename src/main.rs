@@ -27,9 +27,9 @@ fn main() {
     let resource_pack_path = PathBuf::from(
         args.next().unwrap_or_else(|| "resource-pack".to_owned()),
     );
-    let area = match args.next() {
-        None => IVec2::new(0, 0)..IVec2::new(32, 16),
-        Some(s) => {
+    let area = args.next().map_or_else(
+        || IVec2::new(0, 0)..IVec2::new(32, 16),
+        |s| {
             let [x1, z1, x2, z2]: [i32; 4] = s
                 .split(',')
                 .map(|coord| coord.parse().unwrap())
@@ -37,8 +37,8 @@ fn main() {
                 .try_into()
                 .unwrap();
             IVec2::new(x1, z1)..IVec2::new(x2, z2)
-        }
-    };
+        },
+    );
 
     let options = Options {
         resource_pack_path,
