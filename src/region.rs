@@ -25,10 +25,14 @@ impl Region {
                 (entry, location)
             })
             .filter(|(_entry, location)| {
-                (options.area.start.x..options.area.end.x)
+                ((options.area.start.x..options.area.end.x)
                     .contains(&(location.x * 512))
-                    && (options.area.start.y..options.area.end.y)
+                    || (options.area.start.x..options.area.end.x)
+                        .contains(&(location.x * 512 + 511)))
+                    && ((options.area.start.y..options.area.end.y)
                         .contains(&(location.y * 512))
+                        || (options.area.start.y..options.area.end.y)
+                            .contains(&(location.y * 512 + 511)))
             })
             .map(|(entry, location)| {
                 Self::load(entry, options.area.clone(), location)
