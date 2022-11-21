@@ -21,9 +21,9 @@ impl Chunk {
         x: i32,
         z: i32,
     ) -> Option<Self> {
-        if x * 16 < area.start.x
+        if x * 16 + 15 < area.start.x
             || x * 16 >= area.end.x
-            || z * 16 < area.start.y
+            || z * 16 + 15 < area.start.y
             || z * 16 >= area.end.y
         {
             return None;
