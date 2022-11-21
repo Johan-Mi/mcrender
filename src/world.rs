@@ -19,7 +19,8 @@ impl World {
         let chunk = region.chunks[(pos.z >> 4).rem_euclid(32) as usize]
             [(pos.x >> 4).rem_euclid(32) as usize]
             .as_ref()?;
-        let section = &chunk.sections[(pos.y + 64) as usize / 16];
+        let section =
+            chunk.sections.get(usize::try_from(pos.y + 64).ok()? / 16)?;
         let offset_within_section = pos.y.rem_euclid(16) * 256
             + pos.z.rem_euclid(16) * 16
             + pos.x.rem_euclid(16);
