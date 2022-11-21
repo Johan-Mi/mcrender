@@ -15,6 +15,7 @@ use miniquad::{
 use std::{fs::File, path::Path};
 
 const MOVE_SPEED: f32 = 0.2;
+const RUN_SPEED: f32 = 1.0;
 const FLY_SPEED: f32 = 0.2;
 const TURN_SPEED: f32 = 0.04;
 
@@ -42,6 +43,7 @@ struct Renderer {
     key_l: bool,
     key_space: bool,
     key_shift: bool,
+    key_ctrl: bool,
 }
 
 impl Renderer {
@@ -120,6 +122,7 @@ impl Renderer {
             key_l: false,
             key_space: false,
             key_shift: false,
+            key_ctrl: false,
         }
     }
 
@@ -153,10 +156,12 @@ impl EventHandler for Renderer {
         );
 
         if self.key_space {
-            self.camera_position.y += FLY_SPEED;
+            self.camera_position.y +=
+                if self.key_ctrl { RUN_SPEED } else { FLY_SPEED };
         }
         if self.key_shift {
-            self.camera_position.y -= FLY_SPEED;
+            self.camera_position.y -=
+                if self.key_ctrl { RUN_SPEED } else { FLY_SPEED };
         }
 
         let f32_from_bool = |b| if b { 1.0 } else { 0.0 };
@@ -166,7 +171,7 @@ impl EventHandler for Renderer {
                 y: 0.0,
                 z: f32_from_bool(self.key_w) - f32_from_bool(self.key_s),
             }
-            * MOVE_SPEED;
+            * if self.key_ctrl { RUN_SPEED } else { MOVE_SPEED };
     }
 
     fn key_down_event(
@@ -187,6 +192,7 @@ impl EventHandler for Renderer {
             KeyCode::L => self.key_l = true,
             KeyCode::Space => self.key_space = true,
             KeyCode::LeftShift => self.key_shift = true,
+            KeyCode::LeftControl => self.key_ctrl = true,
             KeyCode::O => self.vfov += 0.05,
             KeyCode::I => self.vfov -= 0.05,
             _ => {}
@@ -210,6 +216,7 @@ impl EventHandler for Renderer {
             KeyCode::L => self.key_l = false,
             KeyCode::Space => self.key_space = false,
             KeyCode::LeftShift => self.key_shift = false,
+            KeyCode::LeftControl => self.key_ctrl = false,
             _ => {}
         }
     }
