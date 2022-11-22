@@ -668,7 +668,7 @@ impl BlockModel {
 }
 
 fn lerp(from: f32, to: f32, amount: f32) -> f32 {
-    to * amount + from * (1.0 - amount)
+    (to - from).mul_add(amount, from)
 }
 
 #[repr(C)]
