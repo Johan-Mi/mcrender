@@ -31,7 +31,7 @@ impl Region {
                     && location.y * 512 < options.area.end.y
             })
             .map(|(entry, location)| {
-                Self::load(entry, options.area.clone(), location)
+                Self::load(&entry, options.area.clone(), location)
             })
             .collect()
     }
@@ -51,7 +51,7 @@ impl Region {
     }
 
     fn load(
-        entry: DirEntry,
+        entry: &DirEntry,
         area: Range<IVec2>,
         location: IVec2,
     ) -> (IVec2, Self) {
