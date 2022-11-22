@@ -363,6 +363,9 @@ fn block_texture_name(block: Intern<Block>) -> &'static str {
         "sculk" | "sculk_vein" => {
             "wrong-size-so-prevent-crash-by-not-loading-it"
         }
+        "infested_stone" => "stone",
+        "infested_deepslate" => "deepslate",
+        "snow_block" => "snow",
         _ => name,
     }
 }
