@@ -397,6 +397,7 @@ impl BlockModel {
             Self::None
         } else {
             match &**block.name {
+                "minecraft:cave_air" => Self::None,
                 "minecraft:spruce_leaves" => Self::TransparentBlock,
                 "minecraft:grass"
                 | "minecraft:fern"
