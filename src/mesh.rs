@@ -345,26 +345,26 @@ impl Mesh {
             vertex.light_level *= lerp(
                 lerp(
                     lerp(
-                        light_at(pos),
-                        light_at(pos + IVec3::X),
+                        light_at(pos - IVec3::new(1, 1, 1)),
+                        light_at(pos - IVec3::new(0, 1, 1)),
                         (vertex.pos.x - 0.5).rem_euclid(1.0),
                     ),
                     lerp(
-                        light_at(pos + IVec3::Z),
-                        light_at(pos + IVec3::X + IVec3::Z),
+                        light_at(pos - IVec3::new(1, 1, 0)),
+                        light_at(pos - IVec3::new(0, 1, 0)),
                         (vertex.pos.x - 0.5).rem_euclid(1.0),
                     ),
                     (vertex.pos.z - 0.5).rem_euclid(1.0),
                 ),
                 lerp(
                     lerp(
-                        light_at(pos + IVec3::Y),
-                        light_at(pos + IVec3::Y + IVec3::X),
+                        light_at(pos - IVec3::new(1, 0, 1)),
+                        light_at(pos),
                         (vertex.pos.x - 0.5).rem_euclid(1.0),
                     ),
                     lerp(
-                        light_at(pos + IVec3::Y + IVec3::Z),
-                        light_at(pos + IVec3::Y + IVec3::X + IVec3::Z),
+                        light_at(pos - IVec3::new(1, 0, 0)),
+                        light_at(pos),
                         (vertex.pos.x - 0.5).rem_euclid(1.0),
                     ),
                     (vertex.pos.z - 0.5).rem_euclid(1.0),
