@@ -443,6 +443,7 @@ impl BlockModel {
                 | "minecraft:dead_bush"
                 | "minecraft:brown_mushroom"
                 | "minecraft:red_mushroom"
+                | "minecraft:glow_lichen"
                 | "minecraft:cave_vines"
                 | "minecraft:cave_vines_lit"
                 | "minecraft:cave_vines_plant"
