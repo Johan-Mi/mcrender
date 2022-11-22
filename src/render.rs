@@ -259,17 +259,36 @@ fn read_block_texture(path: &Path) -> Box<[u8]> {
     match raster {
         png_pong::PngRaster::Rgba8(raster) => {
             assert_eq!(raster.width(), 16);
-            assert_eq!(raster.height(), 16);
-            raster.into()
+            if raster.height() == 16 {
+                raster.into()
+            } else {
+                eprintln!(
+                    "Texture {} has wrong height ({})",
+                    path.display(),
+                    raster.height()
+                );
+                <Box<[u8]>>::from(raster)
+                    .iter()
+                    .copied()
+                    .take(16 * 16 * 4)
+                    .collect()
+            }
         }
         png_pong::PngRaster::Rgb8(raster) => {
             assert_eq!(raster.width(), 16);
-            assert_eq!(raster.height(), 16);
+            if raster.height() != 16 {
+                eprintln!(
+                    "Texture {} has wrong height ({})",
+                    path.display(),
+                    raster.height()
+                );
+            }
             <Box<[u8]>>::from(raster)
                 .iter()
                 .copied()
                 .tuples()
                 .flat_map(|(r, g, b)| [r, g, b, 255])
+                .take(16 * 16 * 4)
                 .collect()
         }
         _ => todo!(),

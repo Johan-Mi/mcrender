@@ -396,9 +396,6 @@ fn is_solid(block: Intern<Block>) -> bool {
 fn block_texture_name(block: Intern<Block>) -> &'static str {
     let name = block.name.as_ref().strip_prefix("minecraft:").unwrap();
     match name {
-        "sculk" | "sculk_vein" => {
-            "wrong-size-so-prevent-crash-by-not-loading-it"
-        }
         "infested_stone" => "stone",
         "infested_deepslate" => "deepslate",
         "snow_block" => "snow",
