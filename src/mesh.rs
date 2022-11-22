@@ -440,6 +440,7 @@ impl BlockModel {
                 "minecraft:spruce_leaves" => Self::TransparentBlock,
                 "minecraft:grass"
                 | "minecraft:fern"
+                | "minecraft:dead_bush"
                 | "minecraft:brown_mushroom"
                 | "minecraft:red_mushroom"
                 | "minecraft:cave_vines"
