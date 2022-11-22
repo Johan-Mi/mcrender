@@ -2,7 +2,7 @@ use crate::{
     chunk::{Block, AIR},
     Options, World,
 };
-use glam::{IVec3, Vec2, Vec3};
+use glam::{IVec3, Vec2, Vec3, Vec4, Vec4Swizzles};
 use indexmap::IndexSet;
 use internment::Intern;
 
@@ -532,33 +532,27 @@ impl Mesh {
 
         for vertex in &mut self.vertices {
             let pos = vertex.pos.as_ivec3();
+            let x_lerped = Vec4::new(
+                light_at(pos - IVec3::new(1, 1, 1)),
+                light_at(pos - IVec3::new(1, 1, 0)),
+                light_at(pos - IVec3::new(1, 0, 1)),
+                light_at(pos - IVec3::new(1, 0, 0)),
+            )
+            .lerp(
+                Vec4::new(
+                    light_at(pos - IVec3::new(0, 1, 1)),
+                    light_at(pos - IVec3::new(0, 1, 0)),
+                    light_at(pos - IVec3::new(0, 0, 1)),
+                    light_at(pos),
+                ),
+                (vertex.pos.x - 0.5).rem_euclid(1.0),
+            );
+            let z_lerped = x_lerped
+                .xz()
+                .lerp(x_lerped.yw(), (vertex.pos.z - 0.5).rem_euclid(1.0));
             vertex.light_level *= lerp(
-                lerp(
-                    lerp(
-                        light_at(pos - IVec3::new(1, 1, 1)),
-                        light_at(pos - IVec3::new(0, 1, 1)),
-                        (vertex.pos.x - 0.5).rem_euclid(1.0),
-                    ),
-                    lerp(
-                        light_at(pos - IVec3::new(1, 1, 0)),
-                        light_at(pos - IVec3::new(0, 1, 0)),
-                        (vertex.pos.x - 0.5).rem_euclid(1.0),
-                    ),
-                    (vertex.pos.z - 0.5).rem_euclid(1.0),
-                ),
-                lerp(
-                    lerp(
-                        light_at(pos - IVec3::new(1, 0, 1)),
-                        light_at(pos),
-                        (vertex.pos.x - 0.5).rem_euclid(1.0),
-                    ),
-                    lerp(
-                        light_at(pos - IVec3::new(1, 0, 0)),
-                        light_at(pos),
-                        (vertex.pos.x - 0.5).rem_euclid(1.0),
-                    ),
-                    (vertex.pos.z - 0.5).rem_euclid(1.0),
-                ),
+                z_lerped.x,
+                z_lerped.y,
                 (vertex.pos.y - 0.5).rem_euclid(1.0),
             );
         }
