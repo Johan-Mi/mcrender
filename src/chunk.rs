@@ -59,6 +59,12 @@ impl Chunk {
 pub struct Section {
     #[serde(default)]
     pub block_states: BlockStates,
+    #[serde(default)]
+    #[serde(rename = "BlockLight")]
+    pub block_light: Box<[i8]>,
+    #[serde(default)]
+    #[serde(rename = "SkyLight")]
+    pub sky_light: Box<[i8]>,
 }
 
 pub struct BlockStates {

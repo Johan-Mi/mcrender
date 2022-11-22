@@ -337,6 +337,42 @@ impl Mesh {
             }
         }
 
+        let light_at =
+            |pos: IVec3| (f32::from(world.light_at(pos)) + 5.0) / 20.0;
+
+        for vertex in &mut self.vertices {
+            let pos = vertex.pos.as_ivec3();
+            vertex.light_level *= lerp(
+                lerp(
+                    lerp(
+                        light_at(pos),
+                        light_at(pos + IVec3::X),
+                        (vertex.pos.x - 0.5).rem_euclid(1.0),
+                    ),
+                    lerp(
+                        light_at(pos + IVec3::Z),
+                        light_at(pos + IVec3::X + IVec3::Z),
+                        (vertex.pos.x - 0.5).rem_euclid(1.0),
+                    ),
+                    (vertex.pos.z - 0.5).rem_euclid(1.0),
+                ),
+                lerp(
+                    lerp(
+                        light_at(pos + IVec3::Y),
+                        light_at(pos + IVec3::Y + IVec3::X),
+                        (vertex.pos.x - 0.5).rem_euclid(1.0),
+                    ),
+                    lerp(
+                        light_at(pos + IVec3::Y + IVec3::Z),
+                        light_at(pos + IVec3::Y + IVec3::X + IVec3::Z),
+                        (vertex.pos.x - 0.5).rem_euclid(1.0),
+                    ),
+                    (vertex.pos.z - 0.5).rem_euclid(1.0),
+                ),
+                (vertex.pos.y - 0.5).rem_euclid(1.0),
+            );
+        }
+
         self
     }
 
@@ -416,6 +452,10 @@ impl BlockModel {
             }
         }
     }
+}
+
+fn lerp(from: f32, to: f32, amount: f32) -> f32 {
+    to * amount + from * (1.0 - amount)
 }
 
 #[repr(C)]
