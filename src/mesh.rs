@@ -635,9 +635,7 @@ impl BlockModel {
         } else {
             match &**block.name {
                 "minecraft:cave_air" => Self::None,
-                "minecraft:spruce_leaves" | "minecraft:sculk_vein" => {
-                    Self::TransparentBlock
-                }
+                "minecraft:spruce_leaves" => Self::TransparentBlock,
                 "minecraft:grass"
                 | "minecraft:fern"
                 | "minecraft:dead_bush"
@@ -649,29 +647,23 @@ impl BlockModel {
                 | "minecraft:cave_vines_plant_lit" => {
                     Self::Cross(block_texture_name(block))
                 }
-                "minecraft:glow_lichen" | "minecraft:vine" => {
-                    Self::FlatDirectional {
-                        texture_name: block_texture_name(block),
-                        north: block
-                            .properties
-                            .get("north")
-                            .map(String::as_str)
-                            == Some("true"),
-                        south: block
-                            .properties
-                            .get("south")
-                            .map(String::as_str)
-                            == Some("true"),
-                        east: block.properties.get("east").map(String::as_str)
-                            == Some("true"),
-                        west: block.properties.get("west").map(String::as_str)
-                            == Some("true"),
-                        up: block.properties.get("up").map(String::as_str)
-                            == Some("true"),
-                        down: block.properties.get("down").map(String::as_str)
-                            == Some("true"),
-                    }
-                }
+                "minecraft:glow_lichen"
+                | "minecraft:vine"
+                | "minecraft:sculk_vein" => Self::FlatDirectional {
+                    texture_name: block_texture_name(block),
+                    north: block.properties.get("north").map(String::as_str)
+                        == Some("true"),
+                    south: block.properties.get("south").map(String::as_str)
+                        == Some("true"),
+                    east: block.properties.get("east").map(String::as_str)
+                        == Some("true"),
+                    west: block.properties.get("west").map(String::as_str)
+                        == Some("true"),
+                    up: block.properties.get("up").map(String::as_str)
+                        == Some("true"),
+                    down: block.properties.get("down").map(String::as_str)
+                        == Some("true"),
+                },
                 _ => Self::SolidBlock,
             }
         }
