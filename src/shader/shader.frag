@@ -14,7 +14,7 @@ void main() {
             texcoord.x,
             (texcoord.y + fragment_texture_index) * atlas_size.x / atlas_size.y
         )
-    ) * fragment_light_level;
+    ) * vec4(vec3(fragment_light_level), 1.0);
     if (color.w == 0.0)
         discard;
     gl_FragColor = color;
