@@ -40,7 +40,8 @@ impl Mesh {
                         BlockModel::None => {}
                         BlockModel::SolidBlock
                         | BlockModel::TransparentBlock => {
-                            let texture_index = self.block_texture_id(block);
+                            let texture_index =
+                                self.block_front_side_texture_id(block);
 
                             let v = |pos, u, v, light_level| Vertex {
                                 pos,
@@ -339,12 +340,12 @@ impl Mesh {
         self
     }
 
-    fn block_texture_id(&mut self, block: Intern<Block>) -> f32 {
-        self.allocate_texture(block_texture_name(block)) as f32
-    }
-
     fn block_top_texture_id(&mut self, block: Intern<Block>) -> f32 {
         self.allocate_texture(block_top_texture_name(block)) as f32
+    }
+
+    fn block_front_side_texture_id(&mut self, block: Intern<Block>) -> f32 {
+        self.allocate_texture(block_front_side_texture_name(block)) as f32
     }
 
     fn allocate_texture(&mut self, texture_name: &'static str) -> usize {
@@ -370,6 +371,14 @@ fn block_top_texture_name(block: Intern<Block>) -> &'static str {
     match &**block.name {
         "minecraft:podzol" => "podzol_top",
         "minecraft:grass_block" => "grass_block_top",
+        _ => block_texture_name(block),
+    }
+}
+
+fn block_front_side_texture_name(block: Intern<Block>) -> &'static str {
+    match &**block.name {
+        "minecraft:podzol" => "podzol_side",
+        "minecraft:grass_block" => "grass_block_side",
         _ => block_texture_name(block),
     }
 }
