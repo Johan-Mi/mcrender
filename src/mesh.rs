@@ -399,6 +399,8 @@ fn block_texture_name(block: Intern<Block>) -> &'static str {
         "infested_stone" => "stone",
         "infested_deepslate" => "deepslate",
         "snow_block" => "snow",
+        "water" => "water_still",
+        "lava" => "lava_still",
         _ => name,
     }
 }
