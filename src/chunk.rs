@@ -1,11 +1,12 @@
 use glam::IVec2;
 use internment::Intern;
 use serde::Deserialize;
-use std::{io::Cursor, ops::Range};
+use std::{collections::BTreeMap, io::Cursor, ops::Range};
 
 lazy_static::lazy_static! {
     pub static ref AIR: Intern<Block> = Intern::new(Block {
         name: Intern::from_ref("minecraft:air"),
+        properties: Intern::default(),
     });
 }
 
@@ -127,4 +128,6 @@ impl<'de> Deserialize<'de> for BlockStates {
 #[serde(rename_all = "PascalCase")]
 pub struct Block {
     pub name: Intern<Box<str>>,
+    #[serde(default)]
+    pub properties: Intern<BTreeMap<String, String>>,
 }

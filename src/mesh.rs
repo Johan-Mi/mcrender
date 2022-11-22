@@ -332,6 +332,196 @@ impl Mesh {
                                 vertex_count + 7,
                             ]);
                         }
+                        BlockModel::FlatDirectional {
+                            texture_name,
+                            north,
+                            south,
+                            east,
+                            west,
+                            up,
+                            down,
+                        } => {
+                            let texture_index =
+                                self.allocate_texture(texture_name) as f32;
+
+                            let v = |pos, u, v, light_level| Vertex {
+                                pos,
+                                uv: Vec2 { x: u, y: v },
+                                light_level,
+                                texture_index,
+                            };
+
+                            let p = p.as_vec3();
+
+                            if north {
+                                let p = p + Vec3::Z * 0.0625;
+                                let vertex_count = self.vertices.len() as u32;
+                                self.vertices.extend([
+                                    v(p, 0.0, 1.0, FRONT_BACK_LIGHT_LEVEL),
+                                    v(
+                                        p + Vec3::X,
+                                        1.0,
+                                        1.0,
+                                        FRONT_BACK_LIGHT_LEVEL,
+                                    ),
+                                    v(
+                                        p + Vec3::Y,
+                                        0.0,
+                                        0.0,
+                                        FRONT_BACK_LIGHT_LEVEL,
+                                    ),
+                                    v(
+                                        p + Vec3::X + Vec3::Y,
+                                        1.0,
+                                        0.0,
+                                        FRONT_BACK_LIGHT_LEVEL,
+                                    ),
+                                ]);
+                                self.indices.extend([
+                                    vertex_count,
+                                    vertex_count + 1,
+                                    vertex_count + 2,
+                                    vertex_count + 1,
+                                    vertex_count + 3,
+                                    vertex_count + 2,
+                                ]);
+                            }
+                            if south {
+                                let p = p + Vec3::Z * 0.9375;
+                                let vertex_count = self.vertices.len() as u32;
+                                self.vertices.extend([
+                                    v(p, 0.0, 1.0, FRONT_BACK_LIGHT_LEVEL),
+                                    v(
+                                        p + Vec3::X,
+                                        1.0,
+                                        1.0,
+                                        FRONT_BACK_LIGHT_LEVEL,
+                                    ),
+                                    v(
+                                        p + Vec3::Y,
+                                        0.0,
+                                        0.0,
+                                        FRONT_BACK_LIGHT_LEVEL,
+                                    ),
+                                    v(
+                                        p + Vec3::X + Vec3::Y,
+                                        1.0,
+                                        0.0,
+                                        FRONT_BACK_LIGHT_LEVEL,
+                                    ),
+                                ]);
+                                self.indices.extend([
+                                    vertex_count,
+                                    vertex_count + 2,
+                                    vertex_count + 1,
+                                    vertex_count + 1,
+                                    vertex_count + 2,
+                                    vertex_count + 3,
+                                ]);
+                            }
+                            if east {
+                                let p = p + Vec3::X * 0.9375;
+                                let vertex_count = self.vertices.len() as u32;
+                                self.vertices.extend([
+                                    v(p, 0.0, 1.0, SIDE_LIGHT_LEVEL),
+                                    v(p + Vec3::Z, 1.0, 1.0, SIDE_LIGHT_LEVEL),
+                                    v(p + Vec3::Y, 0.0, 0.0, SIDE_LIGHT_LEVEL),
+                                    v(
+                                        p + Vec3::Z + Vec3::Y,
+                                        1.0,
+                                        0.0,
+                                        SIDE_LIGHT_LEVEL,
+                                    ),
+                                ]);
+                                self.indices.extend([
+                                    vertex_count,
+                                    vertex_count + 1,
+                                    vertex_count + 2,
+                                    vertex_count + 1,
+                                    vertex_count + 3,
+                                    vertex_count + 2,
+                                ]);
+                            }
+                            if west {
+                                let p = p + Vec3::X * 0.0625;
+                                let vertex_count = self.vertices.len() as u32;
+                                self.vertices.extend([
+                                    v(p, 0.0, 1.0, SIDE_LIGHT_LEVEL),
+                                    v(p + Vec3::Z, 1.0, 1.0, SIDE_LIGHT_LEVEL),
+                                    v(p + Vec3::Y, 0.0, 0.0, SIDE_LIGHT_LEVEL),
+                                    v(
+                                        p + Vec3::Z + Vec3::Y,
+                                        1.0,
+                                        0.0,
+                                        SIDE_LIGHT_LEVEL,
+                                    ),
+                                ]);
+                                self.indices.extend([
+                                    vertex_count,
+                                    vertex_count + 2,
+                                    vertex_count + 1,
+                                    vertex_count + 1,
+                                    vertex_count + 2,
+                                    vertex_count + 3,
+                                ]);
+                            }
+                            if up {
+                                let p = p + Vec3::Y * 0.9375;
+                                let vertex_count = self.vertices.len() as u32;
+                                self.vertices.extend([
+                                    v(p, 0.0, 1.0, BOTTOM_LIGHT_LEVEL),
+                                    v(
+                                        p + Vec3::X,
+                                        1.0,
+                                        1.0,
+                                        BOTTOM_LIGHT_LEVEL,
+                                    ),
+                                    v(
+                                        p + Vec3::Z,
+                                        0.0,
+                                        0.0,
+                                        BOTTOM_LIGHT_LEVEL,
+                                    ),
+                                    v(
+                                        p + Vec3::X + Vec3::Z,
+                                        1.0,
+                                        0.0,
+                                        TOP_LIGHT_LEVEL,
+                                    ),
+                                ]);
+                                self.indices.extend([
+                                    vertex_count,
+                                    vertex_count + 1,
+                                    vertex_count + 2,
+                                    vertex_count + 1,
+                                    vertex_count + 3,
+                                    vertex_count + 2,
+                                ]);
+                            }
+                            if down {
+                                let p = p + Vec3::Y * 0.0625;
+                                let vertex_count = self.vertices.len() as u32;
+                                self.vertices.extend([
+                                    v(p, 0.0, 1.0, TOP_LIGHT_LEVEL),
+                                    v(p + Vec3::X, 1.0, 1.0, TOP_LIGHT_LEVEL),
+                                    v(p + Vec3::Z, 0.0, 0.0, TOP_LIGHT_LEVEL),
+                                    v(
+                                        p + Vec3::X + Vec3::Z,
+                                        1.0,
+                                        0.0,
+                                        TOP_LIGHT_LEVEL,
+                                    ),
+                                ]);
+                                self.indices.extend([
+                                    vertex_count,
+                                    vertex_count + 2,
+                                    vertex_count + 1,
+                                    vertex_count + 1,
+                                    vertex_count + 2,
+                                    vertex_count + 3,
+                                ]);
+                            }
+                        }
                     }
                 }
             }
@@ -427,6 +617,15 @@ enum BlockModel {
     SolidBlock,
     TransparentBlock,
     Cross(&'static str),
+    FlatDirectional {
+        texture_name: &'static str,
+        north: bool,
+        south: bool,
+        east: bool,
+        west: bool,
+        up: bool,
+        down: bool,
+    },
 }
 
 impl BlockModel {
@@ -444,12 +643,34 @@ impl BlockModel {
                 | "minecraft:dead_bush"
                 | "minecraft:brown_mushroom"
                 | "minecraft:red_mushroom"
-                | "minecraft:glow_lichen"
                 | "minecraft:cave_vines"
                 | "minecraft:cave_vines_lit"
                 | "minecraft:cave_vines_plant"
                 | "minecraft:cave_vines_plant_lit" => {
                     Self::Cross(block_texture_name(block))
+                }
+                "minecraft:glow_lichen" | "minecraft:vine" => {
+                    Self::FlatDirectional {
+                        texture_name: block_texture_name(block),
+                        north: block
+                            .properties
+                            .get("north")
+                            .map(String::as_str)
+                            == Some("true"),
+                        south: block
+                            .properties
+                            .get("south")
+                            .map(String::as_str)
+                            == Some("true"),
+                        east: block.properties.get("east").map(String::as_str)
+                            == Some("true"),
+                        west: block.properties.get("west").map(String::as_str)
+                            == Some("true"),
+                        up: block.properties.get("up").map(String::as_str)
+                            == Some("true"),
+                        down: block.properties.get("down").map(String::as_str)
+                            == Some("true"),
+                    }
                 }
                 _ => Self::SolidBlock,
             }
