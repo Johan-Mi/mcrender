@@ -1,3 +1,5 @@
+#![forbid(unsafe_code)]
+
 mod chunk;
 mod mesh;
 mod region;
